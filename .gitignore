@@ -81,6 +81,7 @@ celerybeat-schedule
 
 # dotenv
 .env
+.env.local
 
 # virtualenv
 .venv
@@ -131,3 +132,6 @@ pygeoapi/db.sqlite3
 .pygeoapi/docker/examples/elastic/ES/data
 .pygeoapi/docker/examples/mvt-elastic/ES/data
 .pygeoapi/docker/examples/mvt-tippecanoe/ES/data
+
+set_env.sh
+deploy-azure.sh

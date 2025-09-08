@@ -2,8 +2,14 @@
 .github
 .pytest_cache
 .mypy_cache
+.venv
+.env
+.env.local
+set_env.sh
 build
 dist
 docs
 pygeoapi.egg-info
+__pycache__
+
 

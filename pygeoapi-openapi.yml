@@ -1,0 +1,1718 @@
+components:
+  parameters:
+    bbox:
+      description: Only features that have a geometry that intersects the bounding
+        box are selected.The bounding box is provided as four or six numbers, depending
+        on whether the coordinate reference system includes a vertical axis (height
+        or depth).
+      explode: false
+      in: query
+      name: bbox
+      required: false
+      schema:
+        items:
+          type: number
+        maxItems: 6
+        minItems: 4
+        type: array
+      style: form
+    bbox-crs:
+      description: Indicates the coordinate reference system for the given bbox coordinates.
+      explode: false
+      in: query
+      name: bbox-crs
+      required: false
+      schema:
+        format: uri
+        type: string
+      style: form
+    bbox-crs-epsg:
+      description: Indicates the EPSG for the given bbox coordinates.
+      explode: false
+      in: query
+      name: bbox-crs
+      required: false
+      schema:
+        default: 4326
+        type: integer
+      style: form
+    crs:
+      description: Indicates the coordinate reference system for the results.
+      explode: false
+      in: query
+      name: crs
+      required: false
+      schema:
+        format: uri
+        type: string
+      style: form
+    f:
+      description: The optional f parameter indicates the output format which the
+        server shall provide as part of the response document.  The default format
+        is GeoJSON.
+      explode: false
+      in: query
+      name: f
+      required: false
+      schema:
+        default: json
+        enum:
+        - json
+        - html
+        - jsonld
+        type: string
+      style: form
+    lang:
+      description: The optional lang parameter instructs the server return a response
+        in a certain language, if supported.  If the language is not among the available
+        values, the Accept-Language header language will be used if it is supported.
+        If the header is missing, the default server language is used. Note that providers
+        may only support a single language (or often no language at all), that can
+        be different from the server language.  Language strings can be written in
+        a complex (e.g. "fr-CA,fr;q=0.9,en-US;q=0.8,en;q=0.7"), simple (e.g. "de")
+        or locale-like (e.g. "de-CH" or "fr_BE") fashion.
+      in: query
+      name: lang
+      required: false
+      schema:
+        default: en
+        enum:
+        - en
+        type: string
+    offset:
+      description: The optional offset parameter indicates the index within the result
+        set from which the server shall begin presenting results in the response document.  The
+        first element has an index of 0 (default).
+      explode: false
+      in: query
+      name: offset
+      required: false
+      schema:
+        default: 0
+        minimum: 0
+        type: integer
+      style: form
+    resourceId:
+      description: Configuration resource identifier
+      in: path
+      name: resourceId
+      required: true
+      schema:
+        default: reguleringsplaner
+        type: string
+    skipGeometry:
+      description: This option can be used to skip response geometries for each feature.
+      explode: false
+      in: query
+      name: skipGeometry
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    vendorSpecificParameters:
+      description: Additional "free-form" parameters that are not explicitly defined
+      in: query
+      name: vendorSpecificParameters
+      schema:
+        additionalProperties: true
+        type: object
+      style: form
+  responses:
+    '200':
+      description: successful operation
+    '204':
+      description: no content
+    Queryables:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/queryables'
+      description: successful queryables operation
+    Tiles:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/tiles'
+      description: Retrieves the tiles description for this collection
+    default:
+      content:
+        application/json:
+          schema:
+            $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/schemas/exception.yaml
+      description: Unexpected error
+  schemas:
+    queryable:
+      properties:
+        description:
+          description: a human-readable narrative describing the queryable
+          type: string
+        language:
+          default: en
+          description: the language used for the title and description
+          type: string
+        queryable:
+          description: the token that may be used in a CQL predicate
+          type: string
+        title:
+          description: a human readable title for the queryable
+          type: string
+        type:
+          description: the data type of the queryable
+          type: string
+        type-ref:
+          description: a reference to the formal definition of the type
+          format: url
+          type: string
+      required:
+      - queryable
+      - type
+      type: object
+    queryables:
+      properties:
+        queryables:
+          items:
+            $ref: '#/components/schemas/queryable'
+          type: array
+      required:
+      - queryables
+      type: object
+    tilematrixsetlink:
+      properties:
+        tileMatrixSet:
+          type: string
+        tileMatrixSetURI:
+          type: string
+      required:
+      - tileMatrixSet
+      type: object
+    tiles:
+      properties:
+        links:
+          items:
+            $ref: https://schemas.opengis.net/ogcapi/tiles/part1/1.0/openapi/ogcapi-tiles-1.yaml#/components/schemas/link
+          type: array
+        tileMatrixSetLinks:
+          items:
+            $ref: '#/components/schemas/tilematrixsetlink'
+          type: array
+      required:
+      - tileMatrixSetLinks
+      - links
+      type: object
+info:
+  contact:
+    name: Direktoratet for byggkvalitet
+    url: https://www.dibk.no
+    x-ogc-serviceContact:
+      addresses: []
+      emails:
+      - value: post@dibk.no
+      links:
+      - href: https://www.dibk.no
+        type: text/html
+      name: Direktoratet for byggkvalitet
+  description: "OGC API er en ny generasjon standarder fra Open Geospatial Consortium.\
+    \ P\xE5 denne serveren tilbys plandata fra Direktoratet for byggkvalitet."
+  license:
+    name: Norge digitalt-lisens
+    url: https://www.kartverket.no/geodataarbeid/norge-digitalt/partsinformasjon/avtaler-og-vilkar/norge-digitalt-lisens
+  termsOfService: https://www.kartverket.no/geodataarbeid/norge-digitalt/partsinformasjon/avtaler-og-vilkar/norge-digitalt-lisens
+  title: OGC API - Plandata
+  version: 0.22.dev0
+  x-keywords:
+  - OGC
+  - Geospatial
+  - Geodata
+  - Data
+  - API
+openapi: 3.0.2
+paths:
+  /:
+    get:
+      description: Landing page
+      operationId: getLandingPage
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Landing page
+      tags:
+      - server
+  /collections:
+    get:
+      description: Collections
+      operationId: getCollections
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Collections
+      tags:
+      - server
+  /collections/kommunedelplaner:
+    get:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: describeKommunedelplanerCollection
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommunedelplaner metadata
+      tags:
+      - kommunedelplaner
+  /collections/kommunedelplaner/items:
+    get:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: getKommunedelplanerFeatures
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      - $ref: '#/components/parameters/bbox'
+      - description: The optional limit parameter limits the number of items that
+          are presented in the response document (maximum=50, default=20).
+        explode: false
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          type: integer
+        style: form
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/bbox-crs'
+      - &id001
+        description: The properties that should be included for each feature. The
+          parameter value is a comma-separated list of property names.
+        explode: false
+        in: query
+        name: properties
+        required: false
+        schema:
+          items:
+            enum:
+            - objectid
+            - objtype
+            - planidentifikasjon
+            - lovreferansebeskrivelse
+            - ikrafttredelsesdato
+            - plannavn
+            - vedtakendeligplandato
+            - kunngjoringsdato
+            - opprinneligplanid
+            - opprinneligadministrativenhet
+            - lokalid
+            - navnerom
+            - versjonid
+            - omradeid
+            - originaldatavert
+            - kopidato
+            - forstedigitaliseringsdato
+            - oppdateringsdato
+            - kommunenummer
+            - plantype
+            - planstatus
+            - planbestemmelse
+            - lovreferanse
+            - prosesshistorie
+            - informasjon
+            - link
+            - shape_length
+            - shape_area
+            type: string
+          type: array
+        style: form
+      - $ref: '#/components/parameters/vendorSpecificParameters'
+      - $ref: '#/components/parameters/skipGeometry'
+      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
+      - $ref: '#/components/parameters/offset'
+      - explode: false
+        in: query
+        name: objectid
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: objtype
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: planidentifikasjon
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lovreferansebeskrivelse
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: ikrafttredelsesdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: plannavn
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: vedtakendeligplandato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kunngjoringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: opprinneligplanid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: opprinneligadministrativenhet
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lokalid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: navnerom
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: versjonid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: omradeid
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: originaldatavert
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kopidato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: forstedigitaliseringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: oppdateringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kommunenummer
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: plantype
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: planstatus
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: planbestemmelse
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: lovreferanse
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: prosesshistorie
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: informasjon
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: link
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: shape_length
+        required: false
+        schema:
+          type: number
+        style: form
+      - explode: false
+        in: query
+        name: shape_area
+        required: false
+        schema:
+          type: number
+        style: form
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommunedelplaner items
+      tags:
+      - kommunedelplaner
+    options:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: optionsKommunedelplanerFeatures
+      responses:
+        '200':
+          description: options response
+      summary: Options for Kommunedelplaner items
+      tags:
+      - kommunedelplaner
+  /collections/kommunedelplaner/items/{featureId}:
+    get:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: getKommunedelplanerFeature
+      parameters:
+      - $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommunedelplaner item by id
+      tags:
+      - kommunedelplaner
+    options:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: optionsKommunedelplanerFeature
+      parameters:
+      - $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      responses:
+        '200':
+          description: options response
+      summary: Options for Kommunedelplaner item by id
+      tags:
+      - kommunedelplaner
+  /collections/kommunedelplaner/queryables:
+    get:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: getKommunedelplanerQueryables
+      parameters:
+      - *id001
+      - $ref: '#/components/parameters/f'
+      - &id003
+        description: The profile to be applied to a given request
+        explode: false
+        in: query
+        name: profile
+        required: false
+        schema:
+          enum:
+          - actual-domain
+          - valid-domain
+          type: string
+        style: form
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommunedelplaner queryables
+      tags:
+      - kommunedelplaner
+  /collections/kommunedelplaner/schema:
+    get:
+      description: "En kommunedelplan er en delplan under kommuneplanen, og brukes\
+        \ n\xE5r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema\
+        \ eller et geografisk omr\xE5de."
+      operationId: getKommunedelplanerSchema
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommunedelplaner schema
+      tags:
+      - kommunedelplaner
+  /collections/kommuneplaner:
+    get:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: describeKommuneplanerCollection
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommuneplaner metadata
+      tags:
+      - kommuneplaner
+  /collections/kommuneplaner/items:
+    get:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: getKommuneplanerFeatures
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      - $ref: '#/components/parameters/bbox'
+      - description: The optional limit parameter limits the number of items that
+          are presented in the response document (maximum=50, default=20).
+        explode: false
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          type: integer
+        style: form
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/bbox-crs'
+      - &id002
+        description: The properties that should be included for each feature. The
+          parameter value is a comma-separated list of property names.
+        explode: false
+        in: query
+        name: properties
+        required: false
+        schema:
+          items:
+            enum:
+            - objectid
+            - objtype
+            - planidentifikasjon
+            - lovreferansebeskrivelse
+            - ikrafttredelsesdato
+            - plannavn
+            - vedtakendeligplandato
+            - kunngjoringsdato
+            - opprinneligplanid
+            - opprinneligadministrativenhet
+            - lokalid
+            - navnerom
+            - versjonid
+            - omradeid
+            - originaldatavert
+            - kopidato
+            - forstedigitaliseringsdato
+            - oppdateringsdato
+            - kommunenummer
+            - plantype
+            - planstatus
+            - planbestemmelse
+            - lovreferanse
+            - prosesshistorie
+            - informasjon
+            - link
+            - shape_length
+            - shape_area
+            type: string
+          type: array
+        style: form
+      - $ref: '#/components/parameters/vendorSpecificParameters'
+      - $ref: '#/components/parameters/skipGeometry'
+      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
+      - $ref: '#/components/parameters/offset'
+      - explode: false
+        in: query
+        name: objectid
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: objtype
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: planidentifikasjon
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lovreferansebeskrivelse
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: ikrafttredelsesdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: plannavn
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: vedtakendeligplandato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kunngjoringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: opprinneligplanid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: opprinneligadministrativenhet
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lokalid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: navnerom
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: versjonid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: omradeid
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: originaldatavert
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kopidato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: forstedigitaliseringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: oppdateringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kommunenummer
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: plantype
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: planstatus
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: planbestemmelse
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: lovreferanse
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: prosesshistorie
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: informasjon
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: link
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: shape_length
+        required: false
+        schema:
+          type: number
+        style: form
+      - explode: false
+        in: query
+        name: shape_area
+        required: false
+        schema:
+          type: number
+        style: form
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommuneplaner items
+      tags:
+      - kommuneplaner
+    options:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: optionsKommuneplanerFeatures
+      responses:
+        '200':
+          description: options response
+      summary: Options for Kommuneplaner items
+      tags:
+      - kommuneplaner
+  /collections/kommuneplaner/items/{featureId}:
+    get:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: getKommuneplanerFeature
+      parameters:
+      - $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommuneplaner item by id
+      tags:
+      - kommuneplaner
+    options:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: optionsKommuneplanerFeature
+      parameters:
+      - $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      responses:
+        '200':
+          description: options response
+      summary: Options for Kommuneplaner item by id
+      tags:
+      - kommuneplaner
+  /collections/kommuneplaner/queryables:
+    get:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: getKommuneplanerQueryables
+      parameters:
+      - *id002
+      - $ref: '#/components/parameters/f'
+      - *id003
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommuneplaner queryables
+      tags:
+      - kommuneplaner
+  /collections/kommuneplaner/schema:
+    get:
+      description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+        \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk\
+        \ og vern av arealer i kommunen."
+      operationId: getKommuneplanerSchema
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kommuneplaner schema
+      tags:
+      - kommuneplaner
+  /collections/reguleringsplaner:
+    get:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: describeReguleringsplanerCollection
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Reguleringsplaner metadata
+      tags:
+      - reguleringsplaner
+  /collections/reguleringsplaner/items:
+    get:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: getReguleringsplanerFeatures
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      - $ref: '#/components/parameters/bbox'
+      - description: The optional limit parameter limits the number of items that
+          are presented in the response document (maximum=50, default=20).
+        explode: false
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          type: integer
+        style: form
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/bbox-crs'
+      - &id004
+        description: The properties that should be included for each feature. The
+          parameter value is a comma-separated list of property names.
+        explode: false
+        in: query
+        name: properties
+        required: false
+        schema:
+          items:
+            enum:
+            - objid
+            - objtype
+            - landskode
+            - kommunenummer
+            - planidentifikasjon
+            - plannavn
+            - plantype
+            - planstatus
+            - planbestemmelse
+            - ikrafttredelsesdato
+            - vedtakendeligplandato
+            - kunngjoringsdato
+            - forslagsstillertype
+            - lovreferanse
+            - lovreferansebeskrivelse
+            - opprinneligplanid
+            - opprinneligadministrativenhet
+            - vertikalniva
+            - lokalid
+            - navnerom
+            - versjonid
+            - omradeid
+            - originaldatavert
+            - kopidato
+            - forstedigitaliseringsdato
+            - oppdateringsdato
+            - prosesshistorie
+            - informasjon
+            - link
+            type: string
+          type: array
+        style: form
+      - $ref: '#/components/parameters/vendorSpecificParameters'
+      - $ref: '#/components/parameters/skipGeometry'
+      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
+      - $ref: '#/components/parameters/offset'
+      - explode: false
+        in: query
+        name: objid
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: objtype
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: landskode
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kommunenummer
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: planidentifikasjon
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: plannavn
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: plantype
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: planstatus
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: planbestemmelse
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: ikrafttredelsesdato
+        required: false
+        schema:
+          format: date
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: vedtakendeligplandato
+        required: false
+        schema:
+          format: date
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kunngjoringsdato
+        required: false
+        schema:
+          format: date
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: forslagsstillertype
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lovreferanse
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lovreferansebeskrivelse
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: opprinneligplanid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: opprinneligadministrativenhet
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: vertikalniva
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: lokalid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: navnerom
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: versjonid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: omradeid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: originaldatavert
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: kopidato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: forstedigitaliseringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: oppdateringsdato
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: prosesshistorie
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: informasjon
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: false
+        in: query
+        name: link
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Reguleringsplaner items
+      tags:
+      - reguleringsplaner
+    options:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: optionsReguleringsplanerFeatures
+      responses:
+        '200':
+          description: options response
+      summary: Options for Reguleringsplaner items
+      tags:
+      - reguleringsplaner
+  /collections/reguleringsplaner/items/{featureId}:
+    get:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: getReguleringsplanerFeature
+      parameters:
+      - $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Reguleringsplaner item by id
+      tags:
+      - reguleringsplaner
+    options:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: optionsReguleringsplanerFeature
+      parameters:
+      - $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      responses:
+        '200':
+          description: options response
+      summary: Options for Reguleringsplaner item by id
+      tags:
+      - reguleringsplaner
+  /collections/reguleringsplaner/queryables:
+    get:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: getReguleringsplanerQueryables
+      parameters:
+      - *id004
+      - $ref: '#/components/parameters/f'
+      - *id003
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Reguleringsplaner queryables
+      tags:
+      - reguleringsplaner
+  /collections/reguleringsplaner/schema:
+    get:
+      description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+        \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir\
+        \ grunnlag for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8\
+        res i planomr\xE5det."
+      operationId: getReguleringsplanerSchema
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Reguleringsplaner schema
+      tags:
+      - reguleringsplaner
+  /conformance:
+    get:
+      description: API conformance definition
+      operationId: getConformanceDeclaration
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: API conformance definition
+      tags:
+      - server
+  /jobs:
+    get:
+      description: Retrieve a list of jobs
+      operationId: getJobs
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/NotFound.yaml
+        default:
+          $ref: '#/components/responses/default'
+      summary: Retrieve jobs list
+      tags:
+      - jobs
+  /jobs/{jobId}:
+    delete:
+      description: Cancel / delete job
+      operationId: deleteJob
+      parameters:
+      - &id005
+        description: job identifier
+        in: path
+        name: jobId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/NotFound.yaml
+        default:
+          $ref: '#/components/responses/default'
+      summary: Cancel / delete job
+      tags:
+      - jobs
+    get:
+      description: Retrieve job details
+      operationId: getJob
+      parameters:
+      - *id005
+      - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/NotFound.yaml
+        default:
+          $ref: '#/components/responses/default'
+      summary: Retrieve job details
+      tags:
+      - jobs
+  /jobs/{jobId}/results:
+    get:
+      description: Retrieve job results
+      operationId: getJobResults
+      parameters:
+      - *id005
+      - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/NotFound.yaml
+        default:
+          $ref: '#/components/responses/default'
+      summary: Retrieve job results
+      tags:
+      - jobs
+  /openapi:
+    get:
+      description: This document
+      operationId: getOpenapi
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      - description: UI to render the OpenAPI document
+        explode: false
+        in: query
+        name: ui
+        required: false
+        schema:
+          default: swagger
+          enum:
+          - swagger
+          - redoc
+          type: string
+        style: form
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: https://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        default:
+          $ref: '#/components/responses/default'
+      summary: This document
+      tags:
+      - server
+  /processes:
+    get:
+      description: Processes
+      operationId: getProcesses
+      parameters:
+      - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/ProcessList.yaml
+        default:
+          $ref: '#/components/responses/default'
+      summary: Processes
+      tags:
+      - server
+  /processes/dokanalyse:
+    get:
+      description: "Tjeneste som utf\xF8rer en en standardisert DOK-arealanalyse for\
+        \ enhetlig DOK-analyse p\xE5 tvers av kommuner og systemleverand\xF8rerviser."
+      operationId: describeDokanalyseProcess
+      parameters:
+      - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        default:
+          $ref: '#/components/responses/default'
+      summary: Get process metadata
+      tags:
+      - dokanalyse
+  /processes/dokanalyse/execution:
+    post:
+      description: "Tjeneste som utf\xF8rer en en standardisert DOK-arealanalyse for\
+        \ enhetlig DOK-analyse p\xE5 tvers av kommuner og systemleverand\xF8rerviser."
+      operationId: executeDokanalyseJob
+      parameters:
+      - description: Indicates client preferences, including whether the client is
+          capable of asynchronous processing.
+        in: header
+        name: Prefer
+        required: false
+        schema:
+          enum:
+          - respond-async
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              inputs:
+                context: Reguleringsplan
+                includeFactSheet: true
+                includeFilterChosenDOK: true
+                includeGuidance: true
+                includeQualityMeasurement: true
+                inputGeometry:
+                  coordinates:
+                  - - - 504132.67
+                      - 6585575.94
+                    - - 504137.07
+                      - 6585483.64
+                    - - 504286.5
+                      - 6585488.04
+                    - - 504273.32
+                      - 6585575.94
+                    - - 504132.67
+                      - 6585575.94
+                  crs:
+                    properties:
+                      name: urn:ogc:def:crs:EPSG::25832
+                    type: name
+                  type: Polygon
+                requestedBuffer: 50
+                theme: Natur
+            schema:
+              $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/schemas/execute.yaml
+        description: Mandatory execute request JSON
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: Result
+          description: Process output schema
+        '201':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/ExecuteAsync.yaml
+        '404':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/NotFound.yaml
+        '500':
+          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/ServerError.yaml
+        default:
+          $ref: '#/components/responses/default'
+      summary: Process DOK-analyse execution
+      tags:
+      - dokanalyse
+servers:
+- description: "OGC API er en ny generasjon standarder fra Open Geospatial Consortium.\
+    \ P\xE5 denne serveren tilbys plandata fra Direktoratet for byggkvalitet."
+  url: http://localhost:5000
+tags:
+- description: "OGC API er en ny generasjon standarder fra Open Geospatial Consortium.\
+    \ P\xE5 denne serveren tilbys plandata fra Direktoratet for byggkvalitet."
+  externalDocs:
+    description: information
+    url: https://www.dibk.no
+  name: server
+- description: "En reguleringsplan er et arealplankart med tilh\xF8rende bestemmelser\
+    \ som fastlegger bruk, flerbruk og vern i bestemte omr\xE5der, og som gir grunnlag\
+    \ for avklaring av hvilke bygge- og anleggstiltak som kan gjennomf\xF8res i planomr\xE5\
+    det."
+  name: reguleringsplaner
+- description: "Kommuneplanen skal v\xE6re kommunens overordnede styringsdokument.\
+    \ Den skal gi rammer for virksomhetenes planer og tiltak, og planer for bruk og\
+    \ vern av arealer i kommunen."
+  name: kommuneplaner
+- description: "En kommunedelplan er en delplan under kommuneplanen, og brukes n\xE5\
+    r kommunen trenger \xE5 planlegge mer detaljert for et bestemt tema eller et geografisk\
+    \ omr\xE5de."
+  name: kommunedelplaner
+- name: coverages
+- name: edr
+- name: records
+- name: features
+- name: maps
+- name: processes
+- name: jobs
+- name: tiles
+- name: stac

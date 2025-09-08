@@ -2,8 +2,10 @@ Babel
 click
 filelock
 Flask
+geoalchemy2
 jinja2
 jsonschema
+psycopg2
 pydantic
 pygeofilter
 pygeoif
@@ -16,3 +18,5 @@ requests
 shapely
 SQLAlchemy
 tinydb
+dokanalyse @ git+https://github.com/kartverket/DOK.Arealanalyse.Process@main
+postgresql_ext @ git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@main
