@@ -5,6 +5,7 @@
 .venv
 .env
 .env.local
+pygeoapi-config.local.yml
 set_env.sh
 build
 dist
