@@ -75,9 +75,9 @@ components:
       name: lang
       required: false
       schema:
-        default: en
+        default: en-US
         enum:
-        - en
+        - en-US
         type: string
     offset:
       description: The optional offset parameter indicates the index within the result

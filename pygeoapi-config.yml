@@ -7,7 +7,7 @@ server:
   encoding: utf-8
   gzip: false
   languages:
-    - en
+    - en-US
   pretty_print: true
   limits:
     default_items: 20
@@ -77,6 +77,27 @@ resources:
         id_field: objid
         table: rpomrade_omrade
         geom_field: omrade
+        field_mappings:
+          forslagsstillertype:
+            table: forslagstillertype
+            id_field: identifier
+            value_field: description
+          lovreferanse:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/lovreferansetype.gml
+          planbestemmelse:
+            table: planbestemmelse
+            id_field: identifier
+            value_field: description
+          planstatus:
+            table: planstatus
+            id_field: identifier
+            value_field: description
+          plantype:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/plantype.gml
+          vertikalniva:
+            table: vertikalniva
+            id_field: identifier
+            value_field: description
         crs:
           - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           - http://www.opengis.net/def/crs/EPSG/0/25832
@@ -116,6 +137,15 @@ resources:
         id_field: objectid
         table: kpomrade
         geom_field: shape
+        field_mappings:
+          lovreferanse:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/lovreferansetype.gml
+          planbestemmelse:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/omplanbestemmelser.gml
+          planstatus:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/planstatus.gml
+          plantype:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/plantype.gml
         crs:
           - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           - http://www.opengis.net/def/crs/EPSG/0/25832
@@ -155,6 +185,15 @@ resources:
         id_field: objectid
         table: kpomrade
         geom_field: shape
+        field_mappings:
+          lovreferanse:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/lovreferansetype.gml
+          planbestemmelse:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/omplanbestemmelser.gml
+          planstatus:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/planstatus.gml
+          plantype:
+            codelist: https://register.geonorge.no/sosi-kodelister/plan/planregister/plantype.gml
         crs:
           - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           - http://www.opengis.net/def/crs/EPSG/0/25832
