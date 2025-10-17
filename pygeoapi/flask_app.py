@@ -31,7 +31,7 @@
 """Flask module providing the route paths to the api"""
 
 import os
-from typing import Union
+from typing import Union, Optional
 
 import click
 from flask import (Flask, Blueprint, make_response, request,
@@ -46,6 +46,7 @@ import pygeoapi.api.maps as maps_api
 import pygeoapi.api.processes as processes_api
 import pygeoapi.api.stac as stac_api
 import pygeoapi.api.tiles as tiles_api
+import pygeoapi.api.styles as styles_api
 from pygeoapi.openapi import load_openapi_document
 from pygeoapi.config import get_config
 from pygeoapi.util import get_mimetype, get_api_rules
@@ -512,6 +513,52 @@ def get_collection_edr_query(collection_id, instance_id=None,
         query_type, location_id, skip_valid_check=True
     )
 
+@BLUEPRINT.route('/styles')
+@BLUEPRINT.route('/styles/<style_id>')
+def get_styles(style_id: Optional[str] = None):
+    """
+    OGC API - Styles endpoint
+
+    :param style_id: style identifier
+
+    :returns: HTTP response
+    """
+
+    if not style_id:
+        return execute_from_flask(styles_api.get_styles, request)
+
+    format_ = request.args.get('f')
+
+    if not format_:
+        return execute_from_flask(styles_api.get_style, request, style_id)
+
+    return execute_from_flask(styles_api.get_style_definition, request, style_id)
+
+
+@BLUEPRINT.route('/styles/<style_id>/metadata')
+def get_style_metadata(style_id: str):
+    """
+    OGC API - Styles metadata endpoint
+
+    :param style_id: style identifier
+
+    :returns: HTTP response
+    """
+
+    return execute_from_flask(styles_api.get_style_metadata, request, style_id)
+
+
+@BLUEPRINT.route('/collections/<collection_id>/styles')
+def get_collection_styles(collection_id: str):
+    """
+    OGC API - Styles endpoint
+
+    :param collection_id: collection identifier
+
+    :returns: HTTP response
+    """
+
+    return execute_from_flask(styles_api.get_collection_styles, request, collection_id)
 
 @BLUEPRINT.route('/stac')
 def stac_catalog_root():

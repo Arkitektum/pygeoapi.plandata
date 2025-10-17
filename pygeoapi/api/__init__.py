@@ -88,6 +88,9 @@ F_PNG = 'png'
 F_JPEG = 'jpeg'
 F_MVT = 'mvt'
 F_NETCDF = 'NetCDF'
+F_MAPBOX = 'mapbox'
+F_SE11 = 'se11'
+F_SLD10 = 'sld10'
 
 #: Formats allowed for ?f= requests (order matters for complex MIME types)
 FORMAT_TYPES = OrderedDict((
@@ -98,6 +101,9 @@ FORMAT_TYPES = OrderedDict((
     (F_JPEG, 'image/jpeg'),
     (F_MVT, 'application/vnd.mapbox-vector-tile'),
     (F_NETCDF, 'application/x-netcdf'),
+    (F_MAPBOX, 'application/vnd.mapbox.style+json'),
+    (F_SE11, 'application/vnd.ogc.se+xml;version=1.1.0'),
+    (F_SLD10, 'application/vnd.ogc.sld+xml;version=1.0.0'),    
 ))
 
 #: Locale used for system responses (e.g. exceptions)
@@ -133,7 +139,7 @@ def all_apis() -> dict:
     """
 
     from . import (coverages, environmental_data_retrieval, itemtypes, maps,
-                   processes, tiles, stac)
+                   processes, tiles, stac, styles)
 
     return {
         'coverage': coverages,
@@ -142,7 +148,8 @@ def all_apis() -> dict:
         'map': maps,
         'process': processes,
         'tile': tiles,
-        'stac': stac
+        'stac': stac,
+        'styles': styles
     }
 
 
@@ -818,12 +825,17 @@ def landing_page(api: API,
         'type': FORMAT_TYPES[F_HTML],
         'title': l10n.translate('The list of supported tiling schemes as HTML', request.locale),  # noqa
         'href': f"{api.base_url}/TileMatrixSets?f=html"
-    }]
+    }, {
+        'rel': 'http://www.opengis.net/def/rel/ogc/1.0/styles',
+        'type': FORMAT_TYPES[F_JSON],
+        'title': l10n.translate('Styles', request.locale),
+        'href': f'{api.base_url}/styles?f=json'
+    },]
 
     headers = request.get_response_headers(**api.api_headers)
     if request.format == F_HTML:  # render
 
-        for resource_type in ['collection', 'process', 'stac-collection']:
+        for resource_type in ['collection', 'process', 'stac-collection', 'styles']:
             fcm[resource_type] = False
 
             found = filter_dict_by_key_value(api.config['resources'],
@@ -832,9 +844,11 @@ def landing_page(api: API,
                 fcm[resource_type] = True
                 if resource_type == 'collection':  # check for tiles
                     for key, value in found.items():
-                        if filter_providers_by_type(value['providers'],
-                                                    'tile'):
+                        if filter_providers_by_type(value['providers'], 'tile'):                            
                             fcm['tile'] = True
+
+                        if filter_providers_by_type(value['providers'], 'style'):
+                            fcm['styles'] = True                            
 
         content = render_j2_template(
             api.tpl_config, api.config['server']['templates'],
@@ -912,6 +926,9 @@ def conformance(api, request: APIRequest) -> Tuple[dict, int, str]:
                 if provider['type'] == 'record':
                     conformance_list.extend(
                         apis_dict['itemtypes'].CONFORMANCE_CLASSES_RECORDS)
+                if provider['type'] == 'style':
+                    conformance_list.extend(
+                        apis_dict['styles'].CONFORMANCE_CLASSES_STYLES)                    
 
     conformance = {
         'conformsTo': sorted(list(set(conformance_list)))
@@ -1431,6 +1448,8 @@ def get_collection_schema(api: API, request: Union[APIRequest, Any],
         }
 
     for k, v in p.fields.items():
+        # print(v)
+
         schema['properties'][k] = v
         if v['type'] == 'float':
             schema['properties'][k]['type'] = 'number'

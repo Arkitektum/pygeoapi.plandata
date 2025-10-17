@@ -45,6 +45,7 @@ import urllib.parse
 
 from pygeofilter.parsers.ecql import parse as parse_ecql_text
 from pygeofilter.parsers.cql2_json import parse as parse_cql2_json
+from pygeofilter.parsers.cql2_text import parse as parse_cql2_text
 from pyproj.exceptions import CRSError
 
 from pygeoapi import l10n
@@ -301,7 +302,7 @@ def get_collection_items(
             HTTPStatus.BAD_REQUEST, headers, request.format,
             'InvalidParameterValue', str(err))
 
-    resulttype = request.params.get('resulttype') or 'results'
+    resulttype = request.params.get('resulttype') or request.params.get('resultType') or 'results'
 
     LOGGER.debug('Processing bbox parameter')
 
@@ -477,8 +478,9 @@ def get_collection_items(
 
     LOGGER.debug('processing filter parameter')
     cql_text = request.params.get('filter')
+    filter_lang = request.params.get('filter-lang')
 
-    if cql_text is not None:
+    if cql_text is not None and filter_lang == 'cql-text':
         try:
             filter_ = parse_ecql_text(cql_text)
             filter_ = modify_pygeofilter(
@@ -493,6 +495,21 @@ def get_collection_items(
             return api.get_exception(
                 HTTPStatus.BAD_REQUEST, headers, request.format,
                 'InvalidParameterValue', msg)
+    elif cql_text is not None and filter_lang == 'cql2-text':
+        try:
+            filter_ = parse_cql2_text(cql_text)
+            filter_ = modify_pygeofilter(
+                filter_,
+                filter_crs_uri=filter_crs_uri,
+                storage_crs_uri=provider_def.get('storage_crs'),
+                geometry_column_name=provider_def.get('geom_field'),
+            )
+        except Exception:
+            msg = 'Bad CQL2 text'
+            LOGGER.error(f'{msg}: {cql_text}')
+            return api.get_exception(
+                HTTPStatus.BAD_REQUEST, headers, request.format,
+                'InvalidParameterValue', msg)          
     elif request.data:
         try:
             request_data = request.data.decode()
@@ -514,12 +531,14 @@ def get_collection_items(
 
     LOGGER.debug('Processing filter-lang parameter')
     filter_lang = request.params.get('filter-lang')
+    
     # Currently only cql-text is handled, but it is optional
-    if filter_lang not in [None, 'cql-json', 'cql-text']:
+    if filter_lang not in [None, 'cql-json', 'cql-text', 'cql2-text']:
         msg = 'Invalid filter language'
         return api.get_exception(
             HTTPStatus.BAD_REQUEST, headers, request.format,
             'InvalidParameterValue', msg)
+    
     # Get provider locale (if any)
     prv_locale = l10n.get_plugin_locale(provider_def, request.raw_locale)
 

@@ -1050,7 +1050,7 @@ def generate(ctx, config_file, output_file, format_='yaml',
         raise click.ClickException('--config/-c required')
 
     content = generate_openapi_document(
-        config_file, format_, fail_on_invalid_collection)
+        config_file, format_, False)
 
     if output_file is None:
         click.echo(content)
