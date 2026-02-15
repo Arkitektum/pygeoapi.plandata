@@ -433,6 +433,11 @@ def get_collection_items(
         if k not in reserved_fieldnames:
             if k in list(p.fields.keys()) or p.include_extra_query_parameters:
                 include_query_param = True
+            elif '.' in k:
+                root = k.split('.')[0]
+                field = p.fields.get(root, {})
+                if field.get('type') == 'object' and 'properties' in field:
+                    include_query_param = True
 
         if include_query_param:
             LOGGER.debug(f'Including query parameter {k}={v}')
