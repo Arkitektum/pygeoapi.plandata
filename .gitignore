@@ -136,3 +136,5 @@ pygeoapi/db.sqlite3
 set_env.sh
 deploy-azure.sh
 pygeoapi-config.local.yml
+.claude/
+.claude-changes/

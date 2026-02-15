@@ -31,6 +31,17 @@
           {% endfor %}
           </ul>
         {% endif %}
+        {% if qinfo['type'] == 'object' and 'properties' in qinfo %}
+          <ul>
+          {% for pname, pinfo in qinfo['properties'].items() %}
+            <li>{{ qname }}.{{ pname }} (<code>{{ pinfo.get('type', '') }}</code>)
+            {% if 'format' in pinfo and pinfo['format'] %}
+            (<code>{{ pinfo['format'] }}</code>)
+            {% endif %}
+            </li>
+          {% endfor %}
+          </ul>
+        {% endif %}
         </li>
         {% endif %}
       {% endfor %}
