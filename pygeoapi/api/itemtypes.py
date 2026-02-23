@@ -148,7 +148,15 @@ def get_collection_queryables(api: API, request: Union[APIRequest, Any],
         properties = [x for x in val.split(',') if x]
         properties_to_check = set(p.properties) | set(p.fields.keys())
 
-        if len(list(set(properties) - set(properties_to_check))) > 0:
+        unmatched_props = set(properties) - set(properties_to_check)
+        for prop in list(unmatched_props):
+            if '.' in prop:
+                root = prop.split('.')[0]
+                field = p.fields.get(root, {})
+                if field.get('type') == 'object' and 'properties' in field:
+                    unmatched_props.discard(prop)
+
+        if len(unmatched_props) > 0:
             msg = 'unknown properties specified'
             return api.get_exception(
                 HTTPStatus.BAD_REQUEST, headers, request.format,
@@ -458,7 +466,13 @@ def get_collection_items(
                 order = s[0]
                 prop = s[1:]
 
-            if prop not in p.fields.keys():
+            prop_valid = prop in p.fields.keys()
+            if not prop_valid and '.' in prop:
+                root = prop.split('.')[0]
+                field = p.fields.get(root, {})
+                if field.get('type') == 'object' and 'properties' in field:
+                    prop_valid = True
+            if not prop_valid:
                 msg = 'bad sortby property'
                 return api.get_exception(
                     HTTPStatus.BAD_REQUEST, headers, request.format,
@@ -475,8 +489,15 @@ def get_collection_items(
         select_properties = val.split(',')
         properties_to_check = set(p.properties) | set(p.fields.keys())
 
-        if (len(list(set(select_properties) -
-                     set(properties_to_check))) > 0):
+        unknown = set(select_properties) - set(properties_to_check)
+        for prop in list(unknown):
+            if '.' in prop:
+                root = prop.split('.')[0]
+                field = p.fields.get(root, {})
+                if field.get('type') == 'object' and 'properties' in field:
+                    unknown.discard(prop)
+
+        if len(unknown) > 0:
             msg = 'unknown properties specified'
             return api.get_exception(
                 HTTPStatus.BAD_REQUEST, headers, request.format,
@@ -1109,7 +1130,12 @@ def get_oas_30(cfg: dict, locale: str) -> tuple[list[dict[str, str]], dict[str, 
             oas_30_parameters = get_oas_30_parameters(cfg, locale)
 
             coll_properties = deepcopy(oas_30_parameters)['properties']
-            coll_properties['schema']['items']['enum'] = list(p.fields.keys())
+            enum_fields = list(p.fields.keys())
+            for fname, fdef in p.fields.items():
+                if fdef.get('type') == 'object' and 'properties' in fdef:
+                    for nested in fdef['properties']:
+                        enum_fields.append(f'{fname}.{nested}')
+            coll_properties['schema']['items']['enum'] = enum_fields
 
             coll_limit = _derive_limit(
                 deepcopy(limit), cfg['server'].get('limits', {}),
