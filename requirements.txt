@@ -13,7 +13,7 @@ pytz
 PyYAML
 rasterio
 requests
-shapely
+shapely>=2.1.0
 psycopg2
 SQLAlchemy
 geoalchemy2

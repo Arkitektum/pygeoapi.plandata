@@ -29,7 +29,7 @@ ARG PYPI_PACKAGES="\
     pyproj \
     python-dateutil \
     PyYAML \
-    shapely \
+    shapely>=2.1.0 \
     tz"
 
 ENV TZ=${TZ}
