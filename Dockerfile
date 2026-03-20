@@ -51,7 +51,7 @@ RUN \
     && curl -O http://schemas.opengis.net/SCHEMAS_OPENGIS_NET.zip \
     && unzip ./SCHEMAS_OPENGIS_NET.zip "ogcapi/*" -d /schemas.opengis.net \
     && rm -f ./SCHEMAS_OPENGIS_NET.zip \    
-    && curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && curl -LsSf https://astral.sh/uv/0.10.9/install.sh | sh \
     && uv venv $VIRTUAL_ENV \
     && uv pip install ${PYPI_PACKAGES} \
     && uv pip install gdal==$(gdal-config --version) \
