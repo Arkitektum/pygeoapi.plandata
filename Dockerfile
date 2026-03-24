@@ -26,7 +26,7 @@ ARG PYPI_PACKAGES="\
     psycopg2-binary \    
     pydantic \
     pyld \
-    pyproj \
+    pyproj>=3.7.0 \
     python-dateutil \
     PyYAML \
     shapely>=2.1.0 \
@@ -55,9 +55,9 @@ RUN \
     && uv venv $VIRTUAL_ENV \
     && uv pip install ${PYPI_PACKAGES} \
     && uv pip install gdal==$(gdal-config --version) \
-    && uv pip install git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@main-opr \ 
-    && uv pip install git+https://github.com/Arkitektum/pygeoapi.provider.mvt_postgresql_ext@main \ 
-    && uv pip install git+https://github.com/Arkitektum/pygeoapi.provider.styles@main \         
+    && uv pip install git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@main-opr \
+    && uv pip install git+https://github.com/Arkitektum/pygeoapi.provider.mvt_postgresql_ext@main \
+    && uv pip install git+https://github.com/Arkitektum/pygeoapi.provider.styles@main \
     && uv pip install -r requirements-docker.txt \
     && uv pip install -r requirements-admin.txt \
     && uv pip install -e . \
