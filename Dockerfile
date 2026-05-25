@@ -59,6 +59,7 @@ RUN \
     && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@main-opr \
     && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.mvt_postgresql_ext@main \
     && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.styles@main \
+    && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.formatter.gml-npad@main \
     && uv pip install -r requirements-docker.txt \
     && uv pip install -r requirements-admin.txt \
     && uv pip install -e . \
