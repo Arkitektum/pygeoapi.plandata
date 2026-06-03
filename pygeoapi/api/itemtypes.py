@@ -244,6 +244,29 @@ def get_collection_queryables(api: API, request: Union[APIRequest, Any],
     return headers, HTTPStatus.OK, to_json(queryables, api.pretty_print)
 
 
+def _strip_synthetic_properties(features: list, provider) -> None:
+    """Remove provider-declared synthetic property keys from feature
+    properties, in place.
+
+    Some providers (e.g. postgresql_ext with ``gml_passthrough``) inject
+    keys such as ``_geometry_gml`` into ``feature["properties"]`` purely as
+    input for a custom output formatter. Those keys must not appear in the
+    human/JSON output (GeoJSON, JSON-LD, HTML). The provider declares them
+    via ``synthetic_property_keys``; callers strip them only on the
+    non-formatter paths, leaving the formatter's input intact.
+    """
+    synthetic = getattr(provider, 'synthetic_property_keys', ())
+    if not synthetic:
+        return
+    for feature in features:
+        if not isinstance(feature, dict):
+            continue
+        props = feature.get('properties')
+        if props:
+            for key in synthetic:
+                props.pop(key, None)
+
+
 def get_collection_items(
         api: API, request: Union[APIRequest, Any],
         dataset: str | None = None) -> Tuple[dict, int, str]:
@@ -612,6 +635,12 @@ def get_collection_items(
         return api.get_exception(
             err.http_status_code, headers, request.format,
             err.ogc_exception_code, err.message)
+
+    # Synthetic formatter-only keys (e.g. _geometry_gml) must not leak into
+    # GeoJSON/JSON-LD/HTML output. The custom-formatter path below needs
+    # them, so only strip when this request is NOT going to a formatter.
+    if request.format not in [df.f for df in dataset_formatters.values()]:
+        _strip_synthetic_properties(content.get('features', []), p)
 
     serialized_query_params = ''
     for k, v in request.params.items():
@@ -987,6 +1016,11 @@ def get_collection_item(api: API, request: APIRequest,
         msg = 'identifier not found'
         return api.get_exception(HTTPStatus.BAD_REQUEST, headers,
                                  request.format, 'NotFound', msg)
+
+    # Strip synthetic formatter-only keys (e.g. _geometry_gml) on the
+    # human/JSON paths; the custom-formatter branch below keeps them.
+    if request.format not in [df.f for df in dataset_formatters.values()]:
+        _strip_synthetic_properties([content], p)
 
     uri = content['properties'].get(p.uri_field) if p.uri_field else \
         f'{api.get_collections_url()}/{dataset}/items/{identifier}'

@@ -46,7 +46,8 @@ from pygeoapi.api import (API, FORMAT_TYPES, F_GZIP, F_HTML, F_JSONLD,
                           apply_gzip)
 from pygeoapi.api.itemtypes import (
     get_collection_queryables, get_collection_item,
-    get_collection_items, manage_collection_item)
+    get_collection_items, manage_collection_item,
+    _strip_synthetic_properties)
 from pygeoapi.crs import get_crs
 from pygeoapi.formatter.base import BaseFormatter
 from pygeoapi.util import yaml_load
@@ -821,3 +822,30 @@ def test_get_collection_item_json_ld(config, api_):
     rsp_headers, code, response = get_collection_item(api_, req, 'obs', '371')
     assert rsp_headers['Content-Type'] == FORMAT_TYPES[F_JSONLD]
     assert rsp_headers['Content-Language'] == 'fr-CA'
+
+
+class _FakeProvider:
+    def __init__(self, synthetic):
+        self.synthetic_property_keys = tuple(synthetic)
+
+
+def test_strip_synthetic_properties_removes_declared_keys():
+    features = [
+        {'type': 'Feature',
+         'properties': {'plantype': '35', '_geometry_gml': '<gml:Polygon/>'}},
+        {'type': 'Feature',
+         'properties': {'plantype': '20', '_geometry_gml': '<gml:Point/>'}},
+    ]
+    _strip_synthetic_properties(features, _FakeProvider(['_geometry_gml']))
+    assert all('_geometry_gml' not in f['properties'] for f in features)
+    assert features[0]['properties']['plantype'] == '35'
+
+
+def test_strip_synthetic_properties_noop_without_declaration():
+    features = [{'type': 'Feature', 'properties': {'_geometry_gml': 'x'}}]
+    # Provider that declares no synthetic keys (or lacks the attribute)
+    # must leave properties untouched.
+    _strip_synthetic_properties(features, _FakeProvider([]))
+    _strip_synthetic_properties(features, object())
+    assert features[0]['properties'] == {'_geometry_gml': 'x'}
+
