@@ -12,5 +12,5 @@ psycopg[binary]>=3.2.9
 # psycopg2 — installed side by side, matching the Dockerfile.
 psycopg2-binary>=2.9
 
-git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@v0.4.0
-git+https://github.com/Arkitektum/pygeoapi.formatter.gml-npad@v0.2.0
+git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@v0.5.0
+git+https://github.com/Arkitektum/pygeoapi.formatter.gml-npad@v0.3.0

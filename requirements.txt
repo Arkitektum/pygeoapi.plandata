@@ -20,6 +20,6 @@ geoalchemy2
 tinydb
 Flask>=2.2.0
 Flask-Cors
-postgresql_ext @ git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@main-opr
+postgresql_ext @ git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@v0.5.0
 mvt_postgresql_ext @ git+https://github.com/Arkitektum/pygeoapi.provider.mvt_postgresql_ext@main
 styles_provider @ git+https://github.com/Arkitektum/pygeoapi.provider.styles@main
