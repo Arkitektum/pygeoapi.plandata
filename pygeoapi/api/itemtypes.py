@@ -375,7 +375,7 @@ def get_collection_items(
 
         LOGGER.debug(f'Request format: {request.format}')
 
-    if not request.is_valid(dataset_formatters.keys()):
+    if not request.is_valid([v.f for v in dataset_formatters.values()]):
         return api.get_format_exception(request)
 
     crs_transform_spec = None
@@ -648,7 +648,7 @@ def get_collection_items(
             'type': value.mimetype,
             'rel': 'alternate',
             'title': f'This document as {key}',
-            'href': f'{uri}?f={value.name}{serialized_query_params}'
+            'href': f'{uri}?f={value.f}{serialized_query_params}'
         })
 
     next_link = False
@@ -937,6 +937,20 @@ def get_collection_item(api: API, request: APIRequest,
             err.http_status_code, headers, request.format,
             err.ogc_exception_code, err.message)
 
+    LOGGER.debug('Validating requested format')
+    dataset_formatters = get_dataset_formatters(collections[dataset])
+
+    if dataset_formatters:
+        LOGGER.debug(f'Dataset formatters: {dataset_formatters}')
+        request._format = request._get_format(
+            request.get_request_headers(request.headers),
+            {v.f: v.mimetype for v in dataset_formatters.values()})
+
+        LOGGER.debug(f'Request format: {request.format}')
+
+    if not request.is_valid([v.f for v in dataset_formatters.values()]):
+        return api.get_format_exception(request)
+
     crs_transform_spec = None
     if provider_type == 'feature':
         # crs query parameter is only available for OGC API - Features
@@ -1013,8 +1027,16 @@ def get_collection_item(api: API, request: APIRequest,
         'href': f'{api.get_collections_url()}/{dataset}'
     }])
 
+    for key, value in dataset_formatters.items():
+        content['links'].append({
+            'type': value.mimetype,
+            'rel': 'alternate',
+            'title': f'This document as {key}',
+            'href': f'{uri}?f={value.f}'
+        })
+
     link_request_format = (
-        request.format if request.format is not None else F_JSON
+        request.format if request.format in FORMAT_TYPES else F_JSON
     )
     if 'prev' in content:
         content['links'].append({
@@ -1049,6 +1071,41 @@ def get_collection_item(api: API, request: APIRequest,
         content = render_j2_template(api.tpl_config, tpl_config,
                                      'collections/items/item.html',
                                      content, request.locale)
+        return headers, HTTPStatus.OK, content
+
+    elif request.format in [df.f for df in dataset_formatters.values()]:
+        formatter = [v for v in dataset_formatters.values() if
+                     v.f == request.format][0]
+
+        # formatters expect FeatureCollection-shaped data
+        data = {'type': 'FeatureCollection', 'features': [content]}
+
+        try:
+            content = formatter.write(
+                data=data,
+                options={
+                    'provider_def': get_provider_by_type(
+                        collections[dataset]['providers'],
+                        'feature')
+                }
+            )
+        except FormatterSerializationError:
+            msg = 'Error serializing output'
+            return api.get_exception(
+                HTTPStatus.INTERNAL_SERVER_ERROR, headers, request.format,
+                'NoApplicableCode', msg)
+
+        headers['Content-Type'] = formatter.mimetype
+
+        if formatter.attachment:
+            if p.filename is None:
+                filename = f'{dataset}.{formatter.extension}'
+            else:
+                filename = f'{p.filename}'
+
+            cd = f'attachment; filename="{filename}"'
+            headers['Content-Disposition'] = cd
+
         return headers, HTTPStatus.OK, content
 
     elif request.format == F_JSONLD:

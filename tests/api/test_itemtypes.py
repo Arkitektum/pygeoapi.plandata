@@ -48,6 +48,7 @@ from pygeoapi.api.itemtypes import (
     get_collection_queryables, get_collection_item,
     get_collection_items, manage_collection_item)
 from pygeoapi.crs import get_crs
+from pygeoapi.formatter.base import BaseFormatter
 from pygeoapi.util import yaml_load
 
 from tests.util import get_test_file_path, mock_api_request
@@ -57,6 +58,22 @@ from tests.util import get_test_file_path, mock_api_request
 def config():
     with open(get_test_file_path('pygeoapi-test-config.yml')) as fh:
         return yaml_load(fh)
+
+
+class _StubGMLFormatter(BaseFormatter):
+    """Dataset formatter whose plugin name differs from its f short name,
+    like pygeoapi_formatter_gml_npad (name gml-reguleringsplan-20190401,
+    f gml). Locks the contract that format routing matches on .f."""
+
+    def __init__(self, formatter_def):
+        super().__init__({'name': 'gml-stub-long-name', 'attachment': True})
+        self.f = 'gml'
+        self.mimetype = 'application/gml+xml'
+        self.extension = 'gml'
+
+    def write(self, options={}, data=None):
+        n = len(data['features'])
+        return f'<wfs:FeatureCollection numberReturned="{n}"/>'.encode()
 
 
 def test_get_collection_queryables(config, api_):
@@ -649,6 +666,73 @@ def test_get_collection_item(config, api_):
     feature = json.loads(response)
 
     assert feature['properties']['name'] == 'Ålesund'
+
+
+def test_get_collection_item_dataset_formatter(config, api_):
+    # dataset formatter (CSV) dispatch on the single-item route
+    req = mock_api_request({'f': 'csv'})
+    rsp_headers, code, response = get_collection_item(api_, req, 'obs', '371')
+
+    assert code == HTTPStatus.OK
+    assert rsp_headers['Content-Type'] == 'text/csv; charset=utf-8'
+
+    # single feature is wrapped as a one-member collection: header + one row
+    lines = response.decode('utf-8').splitlines()
+    assert len(lines) == 2
+    assert '35' in lines[1]
+
+    # test Accept header for dataset formatters
+    req = mock_api_request(HTTP_ACCEPT='text/csv')
+    rsp_headers, code, response = get_collection_item(api_, req, 'obs', '371')
+
+    assert code == HTTPStatus.OK
+    assert rsp_headers['Content-Type'] == 'text/csv; charset=utf-8'
+
+    # invalid format is still rejected in the handler
+    req = mock_api_request({'f': 'foo'})
+    rsp_headers, code, response = get_collection_item(api_, req, 'obs', '371')
+
+    assert code == HTTPStatus.BAD_REQUEST
+
+
+def test_collection_formatter_name_differs_from_f(config, api_):
+    api_.config['resources']['obs']['formatters'] = [
+        {'name': 'tests.api.test_itemtypes._StubGMLFormatter'}
+    ]
+
+    # list route dispatches on f
+    req = mock_api_request({'f': 'gml'})
+    rsp_headers, code, response = get_collection_items(api_, req, 'obs')
+
+    assert code == HTTPStatus.OK
+    assert rsp_headers['Content-Type'] == 'application/gml+xml'
+    cd = rsp_headers['Content-Disposition']
+    assert cd == 'attachment; filename="obs.gml"'
+    assert b'numberReturned="5"' in response
+
+    # single-item route wraps the feature as a one-member collection
+    req = mock_api_request({'f': 'gml'})
+    rsp_headers, code, response = get_collection_item(api_, req, 'obs', '371')
+
+    assert code == HTTPStatus.OK
+    assert rsp_headers['Content-Type'] == 'application/gml+xml'
+    cd = rsp_headers['Content-Disposition']
+    assert cd == 'attachment; filename="obs.gml"'
+    assert b'numberReturned="1"' in response
+
+    # alternate links advertise f, not the plugin name
+    req = mock_api_request()
+    rsp_headers, code, response = get_collection_item(api_, req, 'obs', '371')
+    links = json.loads(response)['links']
+    gml_links = [li for li in links if li['type'] == 'application/gml+xml']
+    assert len(gml_links) == 1
+    assert gml_links[0]['href'].endswith('?f=gml')
+
+    # the plugin name is not a valid f value
+    req = mock_api_request({'f': 'gml-stub-long-name'})
+    rsp_headers, code, response = get_collection_items(api_, req, 'obs')
+
+    assert code == HTTPStatus.BAD_REQUEST
 
 
 def test_get_collection_item_json_ld(config, api_):

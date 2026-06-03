@@ -1,0 +1,16 @@
+# Fork-gated smoke-test dependencies for the GML output-formatter dispatch.
+#
+# Installed ONLY by .github/workflows/smoke.yml — kept out of the main test
+# job on purpose: the Arkitektum packages below create a circular dependency
+# with this fork (see CLAUDE.md / Dockerfile), so they are isolated to the
+# smoke job and pinned to released TAGS (never branches) so the dispatch
+# contract under test cannot shift underneath it.
+
+# psycopg3 loads schema/fixtures directly in the smoke conftest.
+psycopg[binary]>=3.2.9
+# SQLAlchemy's default postgres dialect (used by postgresql_ext) reaches for
+# psycopg2 — installed side by side, matching the Dockerfile.
+psycopg2-binary>=2.9
+
+git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@v0.4.0
+git+https://github.com/Arkitektum/pygeoapi.formatter.gml-npad@v0.2.0

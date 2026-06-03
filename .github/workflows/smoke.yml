@@ -1,0 +1,71 @@
+name: SOSI GML smoke ⚙️
+
+# Fork-gated end-to-end smoke for the per-dataset GML output-formatter
+# dispatch (postgres -> postgresql_ext -> handler -> formatter). Isolated
+# from the main test job because it installs the Arkitektum packages, which
+# are circularly dependent on this fork. A red run here means a regression
+# in THIS repo's dispatch contract; the formatter/provider are pinned to
+# released tags in requirements-smoke.txt.
+
+on:
+  push:
+    branches:
+      - main-opr
+      - develop-opr
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+
+    services:
+      postgres:
+        image: postgis/postgis:14-3.2
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRESQL_HOST: localhost
+      POSTGRESQL_PORT: '5432'
+      POSTGRESQL_DBNAME: test
+      POSTGRESQL_USER: postgres
+      POSTGRESQL_PASSWORD: postgres
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install GDAL system libraries
+        run: |
+          sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+          sudo apt update
+          sudo apt-get install -y gdal-bin libgdal-dev
+
+      - name: Install pygeoapi + smoke dependencies 📦
+        run: |
+          pip install setuptools
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install .
+          pip install "GDAL==$(gdal-config --version)"
+          pip install -r requirements-smoke.txt
+
+      - name: Run SOSI GML smoke ⚙️
+        run: pytest tests/smoke -v -m smoke
+
+      - name: failed tests 🚩
+        if: ${{ failure() }}
+        run: pip list -v

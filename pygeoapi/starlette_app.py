@@ -371,7 +371,8 @@ async def collection_items(request: Request,
         )
     else:
         return await execute_from_starlette(
-            itemtypes_api.get_collection_item, request, collection_id, item_id)
+            itemtypes_api.get_collection_item, request, collection_id,
+            item_id, skip_valid_check=True)
 
 
 async def collection_coverage(request: Request,

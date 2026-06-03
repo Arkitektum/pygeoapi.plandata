@@ -234,7 +234,8 @@ def collection_item(request: HttpRequest,
 
     if request.method == 'GET':
         response_ = execute_from_django(itemtypes_api.get_collection_item,
-                                        request, collection_id, item_id)
+                                        request, collection_id, item_id,
+                                        skip_valid_check=True)
     elif request.method == 'PUT':
         response_ = execute_from_django(itemtypes_api.manage_collection_item,
                                         request, 'update', collection_id,
