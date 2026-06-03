@@ -218,7 +218,7 @@ def get_style_metadata(api: API, request: APIRequest, style_id: str) -> Tuple[di
     return headers, HTTPStatus.OK, to_json(content, api.pretty_print)
 
 def get_oas_30(cfg: Dict, locale: str) -> Tuple[List[Dict[str, str]], Dict[str, Dict]]:
-    return [], {}
+    return [], {'paths': {}}
 
 def _get_provider_def(api: API, style_id: str) -> Dict | None:
     provider_defs = _get_provider_defs(api)

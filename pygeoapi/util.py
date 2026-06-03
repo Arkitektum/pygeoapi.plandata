@@ -751,14 +751,19 @@ def get_choice_from_headers(headers: dict,
     # Parse choices, extracting optional q values (defaults to 1.0)
     choices = []
     for i, part in enumerate(header.split(',')):
-        match = re.match(r'^([^;]+)(?:;q=([\d.]+))?$', part.strip())
-        if match:
-            value, q_value = match.groups()
-            q_value = float(q_value) if q_value else 1.0
+        # The media type is everything before the first parameter. Tolerate
+        # arbitrary media-type parameters (e.g. ';version=1.1.0' on the OGC
+        # SE/SLD style types), extracting the optional q weight wherever it
+        # appears rather than only when it is the sole parameter.
+        value = part.split(';', 1)[0].strip()
+        if not value:
+            continue
+        q_match = re.search(r';\s*q=([\d.]+)', part)
+        q_value = float(q_match.group(1)) if q_match else 1.0
 
-            # Sort choices by q value and index
-            if 0 <= q_value <= 1:
-                heappush(choices, (1 / q_value, i, value))
+        # Sort choices by q value and index
+        if 0 <= q_value <= 1:
+            heappush(choices, (1 / q_value, i, value))
 
     # Drop q value
     sorted_choices = [choice[-1] for choice in choices]
