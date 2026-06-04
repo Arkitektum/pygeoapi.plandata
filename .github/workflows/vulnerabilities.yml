@@ -32,9 +32,13 @@ jobs:
         severity: CRITICAL,HIGH
         scanners: vuln,misconfig,secret
         scan-ref: .
+    - name: Compute lowercase image reference
+      # Docker/OCI references must be lowercase; github.repository contains
+      # uppercase (Arkitektum/...), which trivy cannot parse.
+      run: echo "IMAGE_REF=$(echo '${{ github.repository }}:${{ github.sha }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
     - name: Build locally the image from Dockerfile
       run: |
-        docker buildx build -t ${{ github.repository }}:${{ github.sha }} --platform linux/amd64 --no-cache -f Dockerfile .
+        docker buildx build -t "$IMAGE_REF" --platform linux/amd64 --no-cache -f Dockerfile .
     - name: Scan locally built Docker image for vulnerabilities with trivy
       uses: aquasecurity/trivy-action@master
       env:
@@ -46,4 +50,4 @@ jobs:
         ignore-unfixed: true
         severity: CRITICAL,HIGH
         vuln-type: os,library
-        image-ref: '${{ github.repository }}:${{ github.sha }}'
+        image-ref: '${{ env.IMAGE_REF }}'

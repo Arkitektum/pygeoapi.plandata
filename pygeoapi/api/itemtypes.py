@@ -543,7 +543,7 @@ def get_collection_items(
     cql_text = request.params.get('filter')
     filter_lang = request.params.get('filter-lang')
 
-    if cql_text is not None and filter_lang == 'cql-text':
+    if cql_text is not None and filter_lang in (None, 'cql-text'):
         try:
             filter_ = parse_ecql_text(cql_text)
             filter_ = modify_pygeofilter(
