@@ -519,6 +519,7 @@ def get_collection_edr_query(collection_id: str,
         query_type, location_id, skip_valid_check=True
     )
 
+
 @BLUEPRINT.route('/styles')
 @BLUEPRINT.route('/styles/<style_id>')
 def get_styles(style_id: Optional[str] = None):
@@ -538,7 +539,8 @@ def get_styles(style_id: Optional[str] = None):
     if not format_:
         return execute_from_flask(styles_api.get_style, request, style_id)
 
-    return execute_from_flask(styles_api.get_style_definition, request, style_id)
+    return execute_from_flask(
+        styles_api.get_style_definition, request, style_id)
 
 
 @BLUEPRINT.route('/styles/<style_id>/metadata')
@@ -564,7 +566,9 @@ def get_collection_styles(collection_id: str):
     :returns: HTTP response
     """
 
-    return execute_from_flask(styles_api.get_collection_styles, request, collection_id)
+    return execute_from_flask(
+        styles_api.get_collection_styles, request, collection_id)
+
 
 @BLUEPRINT.route('/stac-api')
 def stac_landing_page():

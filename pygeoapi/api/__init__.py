@@ -105,7 +105,7 @@ FORMAT_TYPES = OrderedDict((
     (F_NETCDF, 'application/x-netcdf'),
     (F_MAPBOX, 'application/vnd.mapbox.style+json'),
     (F_SE11, 'application/vnd.ogc.se+xml;version=1.1.0'),
-    (F_SLD10, 'application/vnd.ogc.sld+xml;version=1.0.0'),    
+    (F_SLD10, 'application/vnd.ogc.sld+xml;version=1.0.0'),
 ))
 
 #: Locale used for system responses (e.g. exceptions)
@@ -746,7 +746,8 @@ def landing_page(api: API,
     headers = request.get_response_headers(**api.api_headers)
     if request.format == F_HTML:  # render
 
-        for resource_type in ['collection', 'process', 'stac-collection', 'styles']:
+        for resource_type in ['collection', 'process',
+                              'stac-collection', 'styles']:
             fcm[resource_type] = False
 
             found = filter_dict_by_key_value(api.config['resources'],
@@ -755,11 +756,13 @@ def landing_page(api: API,
                 fcm[resource_type] = True
                 if resource_type == 'collection':  # check for tiles
                     for key, value in found.items():
-                        if filter_providers_by_type(value['providers'], 'tile'):                            
+                        if filter_providers_by_type(value['providers'],
+                                                    'tile'):
                             fcm['tile'] = True
 
-                        if filter_providers_by_type(value['providers'], 'style'):
-                            fcm['styles'] = True                            
+                        if filter_providers_by_type(value['providers'],
+                                                    'style'):
+                            fcm['styles'] = True
 
         content = render_j2_template(
             api.tpl_config, api.config['server']['templates'],
@@ -839,7 +842,7 @@ def conformance(api: API, request: APIRequest) -> Tuple[dict, int, str]:
                         apis_dict['itemtypes'].CONFORMANCE_CLASSES_RECORDS)
                 if provider['type'] == 'style':
                     conformance_list.extend(
-                        apis_dict['styles'].CONFORMANCE_CLASSES_STYLES)                    
+                        apis_dict['styles'].CONFORMANCE_CLASSES_STYLES)
 
     conformance = {
         'conformsTo': sorted(list(set(conformance_list)))

@@ -332,7 +332,8 @@ def get_collection_items(
             HTTPStatus.BAD_REQUEST, headers, request.format,
             'InvalidParameterValue', str(err))
 
-    resulttype = request.params.get('resulttype') or request.params.get('resultType') or 'results'
+    resulttype = (request.params.get('resulttype')
+                  or request.params.get('resultType') or 'results')
 
     LOGGER.debug('Processing bbox parameter')
 
@@ -571,7 +572,7 @@ def get_collection_items(
             LOGGER.error(f'{msg}: {cql_text}')
             return api.get_exception(
                 HTTPStatus.BAD_REQUEST, headers, request.format,
-                'InvalidParameterValue', msg)          
+                'InvalidParameterValue', msg)
     elif request.data:
         try:
             request_data = request.data.decode()
@@ -593,14 +594,14 @@ def get_collection_items(
 
     LOGGER.debug('Processing filter-lang parameter')
     filter_lang = request.params.get('filter-lang')
-    
+
     # Currently only cql-text is handled, but it is optional
     if filter_lang not in [None, 'cql-json', 'cql-text', 'cql2-text']:
         msg = 'Invalid filter language'
         return api.get_exception(
             HTTPStatus.BAD_REQUEST, headers, request.format,
             'InvalidParameterValue', msg)
-    
+
     # Get provider locale (if any)
     prv_locale = l10n.get_plugin_locale(provider_def, request.raw_locale)
 

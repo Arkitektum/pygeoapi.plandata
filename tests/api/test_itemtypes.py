@@ -848,4 +848,3 @@ def test_strip_synthetic_properties_noop_without_declaration():
     _strip_synthetic_properties(features, _FakeProvider([]))
     _strip_synthetic_properties(features, object())
     assert features[0]['properties'] == {'_geometry_gml': 'x'}
-
