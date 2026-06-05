@@ -15,7 +15,7 @@
 # runs `pytest tests/smoke`.
 #
 # A red smoke run means a FORK regression in the dispatch contract — the
-# formatter and provider are pinned to released tags (v0.4.0 / v0.5.0), so
+# formatter and provider are pinned to released tags (v0.5.0 / v0.5.0), so
 # they cannot move underneath this test.
 #
 # =================================================================
