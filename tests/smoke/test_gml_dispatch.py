@@ -44,7 +44,7 @@ def test_single_item_route_dispatches_gml(smoke_api):
 
     assert code == HTTPStatus.OK
     assert headers['Content-Type'] == 'application/gml+xml'
-    assert headers['Content-Disposition'] == 'attachment; filename="rpomrade.gml"'  # noqa: E501
+    assert headers['Content-Disposition'] == 'inline; filename="rpomrade.gml"'
 
     gml = _as_text(content)
     # the single feature is wrapped as a one-member wfs:FeatureCollection

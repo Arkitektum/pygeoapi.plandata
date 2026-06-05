@@ -122,11 +122,10 @@ def _rpomrade_resource() -> dict:
             'validate': False,
             'f': 'gml',
             'mimetype': 'application/gml+xml',
-            # Exercise the fork's attachment -> Content-Disposition branch.
-            # gml-npad v0.4.0 defaults attachment to false (production sets it
-            # false for inline browser rendering); the smoke flips it on to
-            # pin that the fork honours the flag.
-            'attachment': True,
+            # attachment: false mirrors production (inline rendering); the
+            # fork still emits Content-Disposition: inline with a filename,
+            # which the single-item test asserts below.
+            'attachment': False,
         }],
     }
 

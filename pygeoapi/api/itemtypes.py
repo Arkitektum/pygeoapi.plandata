@@ -784,14 +784,17 @@ def get_collection_items(
 
         headers['Content-Type'] = formatter.mimetype
 
-        if formatter.attachment:
-            if p.filename is None:
-                filename = f'{dataset}.{formatter.extension}'
-            else:
-                filename = f'{p.filename}'
+        if p.filename is None:
+            filename = f'{dataset}.{formatter.extension}'
+        else:
+            filename = f'{p.filename}'
 
-            cd = f'attachment; filename="{filename}"'
-            headers['Content-Disposition'] = cd
+        # Always advertise a filename. formatter.attachment chooses download
+        # (attachment) vs inline render; either way Save-As gets a real name
+        # instead of the URL's last path segment.
+        disposition = 'attachment' if formatter.attachment else 'inline'
+        cd = f'{disposition}; filename="{filename}"'
+        headers['Content-Disposition'] = cd
 
         return headers, HTTPStatus.OK, content
 
@@ -1132,14 +1135,17 @@ def get_collection_item(api: API, request: APIRequest,
 
         headers['Content-Type'] = formatter.mimetype
 
-        if formatter.attachment:
-            if p.filename is None:
-                filename = f'{dataset}.{formatter.extension}'
-            else:
-                filename = f'{p.filename}'
+        if p.filename is None:
+            filename = f'{dataset}.{formatter.extension}'
+        else:
+            filename = f'{p.filename}'
 
-            cd = f'attachment; filename="{filename}"'
-            headers['Content-Disposition'] = cd
+        # Always advertise a filename. formatter.attachment chooses download
+        # (attachment) vs inline render; either way Save-As gets a real name
+        # instead of the URL's last path segment.
+        disposition = 'attachment' if formatter.attachment else 'inline'
+        cd = f'{disposition}; filename="{filename}"'
+        headers['Content-Disposition'] = cd
 
         return headers, HTTPStatus.OK, content
 
