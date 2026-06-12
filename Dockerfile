@@ -56,7 +56,7 @@ RUN \
     && uv pip install ${PYPI_PACKAGES} \
     && uv pip install gdal==$(gdal-config --version) \
     && uv pip freeze > /tmp/constraints.txt \
-    && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@v0.5.1 \
+    && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.postgresql_ext@v0.5.2 \
     && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.mvt_postgresql_ext@main \
     && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.provider.styles@main \
     && uv pip install --constraint /tmp/constraints.txt git+https://github.com/Arkitektum/pygeoapi.formatter.gml-npad@v0.5.0 \
